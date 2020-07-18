@@ -1,7 +1,11 @@
 package ml.govnoed.Manhunt;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -11,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
 	
-		@Override
 		public void onEnable() {
 		
 			this.getServer().getPluginManager().registerEvents(this, this);
@@ -25,8 +28,20 @@ public class Main extends JavaPlugin implements Listener {
 
 		public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
+			if (label.equalsIgnoreCase("manhunt")) {
+				if (!(sender instanceof Player)) {
+					sender.sendMessage("Sorry! This command is players only!");
+					return true;
+				}
+				if (args[0].equalsIgnoreCase("victim")) {
+					// join here
+				}
+				if (args[0].equalsIgnoreCase("leave")) {
+					// leave
+				}
+			}
+			
 			return false;
-
 		}
 		
 		
