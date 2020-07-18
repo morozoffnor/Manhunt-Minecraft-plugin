@@ -4,16 +4,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
 	
-	@Override
+		@Override
 		public void onEnable() {
-
+		
+			this.getServer().getPluginManager().registerEvents(this, this);
+			
 		}
 
 		@Override
@@ -36,6 +38,11 @@ public class Main extends JavaPlugin implements Listener {
 		@EventHandler
 		public void onClick(PlayerInteractEvent event) {
 			// event.getAction() == Action.RIGHT_CLICK_AIR
+		}
+		
+		@EventHandler
+		public void onDeath(PlayerDeathEvent event) {
+			// check deaths
 		}
 
 }
