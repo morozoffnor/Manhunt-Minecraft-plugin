@@ -28,7 +28,6 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
 			if (label.equalsIgnoreCase("manhunt")) {
 				if (!(sender instanceof Player)) {
 					sender.sendMessage("Sorry! This command is players only!");
@@ -41,8 +40,31 @@ public class Main extends JavaPlugin implements Listener {
 					// leave
 				}
 			}
+		if (label.equalsIgnoreCase("manhunt")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("Sorry! This command is players only!");
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("victim")) {
+				
+				Player player = (Player) sender;
+				Location[] loc = new Location[15];
+				Location dummy = new Location(Bukkit.getWorld("world1121"), 1.0, 1.0, 1.0);
+				int jopa = 0;
+//				Bukkit.getServer().broadcastMessage(loc.toString());
+				victims.put(player.getName(), loc);
+			}
+			if (args[0].equalsIgnoreCase("leave")) {
+				// leave
+			}
+			if (args[0].equalsIgnoreCase("start")) {
+				
+				runGame();
+				Bukkit.getServer().broadcastMessage("The game will start soon!");
+			}
 			
 			return false;
+		}
 		}
 		
 		
