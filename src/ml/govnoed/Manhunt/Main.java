@@ -57,10 +57,12 @@ public class Main extends JavaPlugin implements Listener {
 				
 				Player player = (Player) sender;
 				Location[] loc = new Location[15];
-				Location dummy = new Location(Bukkit.getWorld("world1121"), 1.0, 1.0, 1.0);
-				int jopa = 0;
-				
-				
+				for(int i = 0;i<loc.length;i++) {
+					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
+				}
+//				for(Location l : loc) {
+//					Bukkit.getServer().broadcastMessage(Double.toString(l.getX()));
+//				}
 //				Bukkit.getServer().broadcastMessage(loc.toString());
 				victims.put(player.getName(), loc);
 				
@@ -72,8 +74,6 @@ public class Main extends JavaPlugin implements Listener {
 			if (args[0].equalsIgnoreCase("start")) {
 				
 //<<<<<<< Updated upstream
-				runGame();
-				Bukkit.getServer().broadcastMessage("The game will start soon!");
 //=======
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (!(victims.containsKey(player.getName()))) {
@@ -146,11 +146,12 @@ public class Main extends JavaPlugin implements Listener {
 				else counter++;
 				
 				// debug
-				Location[] loc = victims.get("_morozoff");
-				Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
-				
+//				Location[] loc = victims.get("Shibatsui");
+//				Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
+//				
 				
 				// debug
+				gameRunning();
 			}
 		};
 		
