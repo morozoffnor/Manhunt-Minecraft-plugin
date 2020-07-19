@@ -19,7 +19,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,7 +28,10 @@ import net.md_5.bungee.api.ChatColor;
 public class Main extends JavaPlugin implements Listener {
 	
 	public Map<String, Location[]> victims = new HashMap<String, Location[]>();
-	public Map<String, String> hunters = new HashMap<String, String>();
+	public Map<String, Integer> hunters = new HashMap<String, Integer>();
+	List<String> victimsInOrder = new ArrayList<String>();
+	List<String> huntersInOrder = new ArrayList<String>();
+	
 	public int counter = 0;
 	public boolean gameActive = false;
 	
@@ -65,6 +67,7 @@ public class Main extends JavaPlugin implements Listener {
 //				}
 //				Bukkit.getServer().broadcastMessage(loc.toString());
 				victims.put(player.getName(), loc);
+				victimsInOrder.add(player.getName());
 				
 				
 			}
@@ -82,7 +85,8 @@ public class Main extends JavaPlugin implements Listener {
 //=======
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (!(victims.containsKey(player.getName()))) {
-						hunters.put(player.getName(), "jopa");
+						hunters.put(player.getName(), 0);
+						huntersInOrder.add(player.getName());
 						player.sendMessage("You are the hunter!");
 					} else {
 						player.sendMessage("You are the victim!");
@@ -186,7 +190,12 @@ public class Main extends JavaPlugin implements Listener {
 					if (player.getInventory().getItemInMainHand().getItemMeta().hasLore()) {
 //						Bukkit.getServer().broadcastMessage("компас не на жопу");
 						
-						Location[] loc = victims.get("Shibatsui");
+						if (hunters.get(player.getName()) == victimsInOrder.size() - 1) hunters.put(player.getName(), 0);
+						else hunters.put(player.getName(), hunters.get(player.getName()) + 1);
+						
+						
+						
+						Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
 						
 						player.setCompassTarget(loc[counter]);
 					}
