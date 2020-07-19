@@ -73,6 +73,11 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				
+				if (gameActive == true) {
+					Bukkit.getServer().broadcastMessage("хуй тебе а не игру сломать пидор сдохни");
+					return true;
+				}
+				
 //<<<<<<< Updated upstream
 //=======
 				for (Player player : Bukkit.getOnlinePlayers()) {
@@ -85,8 +90,10 @@ public class Main extends JavaPlugin implements Listener {
 				}
 				
 				gameActive = true;
+				gameRunning();
 				runGame();
 				Bukkit.getServer().broadcastMessage("The game will start soon!");
+				return true;
 				
 				
 				
@@ -118,7 +125,7 @@ public class Main extends JavaPlugin implements Listener {
 				Bukkit.getServer().broadcastMessage("Victims: " + victims.keySet());
 				
 				
-				gameRunning();
+				
 				
 			}
 		};
@@ -140,10 +147,12 @@ public class Main extends JavaPlugin implements Listener {
 						loc[counter] = player.getLocation();
 						// положить обратно где взяли
 						victims.put(player.getName(), loc);
+//						Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
 					}
 				}
 				if (counter == 14) counter = 0;
 				else counter++;
+//				Bukkit.getServer().broadcastMessage("увеличиваю каунтер");
 				
 				// debug
 //				Location[] loc = victims.get("Shibatsui");
@@ -152,6 +161,7 @@ public class Main extends JavaPlugin implements Listener {
 				
 				// debug
 				gameRunning();
+//				Bukkit.getServer().broadcastMessage("запускаю заново хуйню");
 			}
 		};
 		
@@ -167,14 +177,14 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-			Bukkit.getServer().broadcastMessage("жопа правой кнопкой по воздуху");
+//			Bukkit.getServer().broadcastMessage("жопа правой кнопкой по воздуху");
 			Player player = event.getPlayer();
 			if (hunters.containsKey(player.getName())) {
-				Bukkit.getServer().broadcastMessage("жопа хантера");
+//				Bukkit.getServer().broadcastMessage("жопа хантера");
 				if (player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
-					Bukkit.getServer().broadcastMessage("компас в жопе");
+//					Bukkit.getServer().broadcastMessage("компас в жопе");
 					if (player.getInventory().getItemInMainHand().getItemMeta().hasLore()) {
-						Bukkit.getServer().broadcastMessage("компас не на жопу");
+//						Bukkit.getServer().broadcastMessage("компас не на жопу");
 						
 						Location[] loc = victims.get("Shibatsui");
 						
