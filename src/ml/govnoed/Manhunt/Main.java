@@ -31,6 +31,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, Location[]> victims = new HashMap<String, Location[]>();
 	public Map<String, String> hunters = new HashMap<String, String>();
 	public int counter = 0;
+	public boolean gameActive = false;
 	
 	@Override
 	public void onEnable() {
@@ -70,10 +71,10 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				
-<<<<<<< Updated upstream
+//<<<<<<< Updated upstream
 				runGame();
 				Bukkit.getServer().broadcastMessage("The game will start soon!");
-=======
+//=======
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (!(victims.containsKey(player.getName()))) {
 						hunters.put(player.getName(), "jopa");
@@ -93,7 +94,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (args[0].equalsIgnoreCase("stop")) {
 				gameActive = false;
 				Bukkit.getServer().broadcastMessage(ChatColor.RED + "The game is ended!");
->>>>>>> Stashed changes
+//>>>>>>> Stashed changes
 			}
 		}
 		
