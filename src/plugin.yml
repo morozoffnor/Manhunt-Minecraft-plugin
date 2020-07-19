@@ -1,0 +1,7 @@
+main: ml.govnoed.Manhunt.Main
+name: Manhunt
+authors: [morozoffnor, shibatsu]
+version: 1.0
+
+commands: 
+  manhunt: 

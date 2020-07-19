@@ -20,6 +20,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, Location[]> victims = new HashMap<String, Location[]>();
 	public Map<String, Location[]> hunters = new HashMap<String, Location[]>();
 	public int counter = 0;
+	public boolean gameActive = false;
 	
 	@Override
 	public void onEnable() {
@@ -45,10 +46,12 @@ public class Main extends JavaPlugin implements Listener {
 				
 				Player player = (Player) sender;
 				Location[] loc = new Location[15];
-				Location dummy = new Location(Bukkit.getWorld("world1121"), 1.0, 1.0, 1.0);
-				int jopa = 0;
-				
-				
+				for(int i = 0;i<loc.length;i++) {
+					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
+				}
+//				for(Location l : loc) {
+//					Bukkit.getServer().broadcastMessage(Double.toString(l.getX()));
+//				}
 //				Bukkit.getServer().broadcastMessage(loc.toString());
 				victims.put(player.getName(), loc);
 				
@@ -58,9 +61,14 @@ public class Main extends JavaPlugin implements Listener {
 				// leave
 			}
 			if (args[0].equalsIgnoreCase("start")) {
-				
+				gameActive = true;
 				runGame();
 				Bukkit.getServer().broadcastMessage("The game will start soon!");
+				
+			}
+			if (args[0].equalsIgnoreCase("stop")) {
+				gameActive = false;
+				Bukkit.getServer().broadcastMessage("The game is ended!");
 			}
 		}
 		
@@ -88,25 +96,24 @@ public class Main extends JavaPlugin implements Listener {
 			
 			@Override
 			public void run() {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					if (victims.containsKey(player.getName())) {
-						// забрать массив из мапы
-						Location[] loc = victims.get(player.getName());
-						// поменять значение в массиве по индексу
-						loc[counter] = player.getLocation();
-						// положить обратно где взяли
-						victims.put(player.getName(), loc);
+				if(gameActive == true) {
+					for (Player player : Bukkit.getOnlinePlayers()) {
+						if (victims.containsKey(player.getName())) {
+							// забрать массив из мапы
+							Location[] loc = victims.get(player.getName());
+							// поменять значение в массиве по индексу
+							loc[counter] = player.getLocation();
+							// положить обратно где взяли
+							victims.put(player.getName(), loc);
+						}
 					}
+//					Location[] loc = victims.get("Shibatsui");
+//					Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
+					if (counter == 14) counter = 0;
+					else counter++;
+					
+					gameRunning();
 				}
-				if (counter == 14) counter = 0;
-				else counter++;
-				
-				// debug
-				Location[] loc = victims.get("_morozoff");
-				Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
-				
-				
-				// debug
 			}
 		};
 		
