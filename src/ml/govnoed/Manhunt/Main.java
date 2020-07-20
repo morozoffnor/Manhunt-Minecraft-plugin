@@ -62,10 +62,7 @@ public class Main extends JavaPlugin implements Listener {
 				for(int i = 0;i<loc.length;i++) {
 					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
 				}
-//				for(Location l : loc) {
-//					Bukkit.getServer().broadcastMessage(Double.toString(l.getX()));
-//				}
-//				Bukkit.getServer().broadcastMessage(loc.toString());
+
 				victims.put(player.getName(), loc);
 				victimsInOrder.add(player.getName());
 				
@@ -80,9 +77,7 @@ public class Main extends JavaPlugin implements Listener {
 					Bukkit.getServer().broadcastMessage("хуй тебе а не игру сломать пидор сдохни");
 					return true;
 				}
-				
-//<<<<<<< Updated upstream
-//=======
+
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (!(victims.containsKey(player.getName()))) {
 						hunters.put(player.getName(), 0);
@@ -105,7 +100,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (args[0].equalsIgnoreCase("stop")) {
 				gameActive = false;
 				Bukkit.getServer().broadcastMessage(ChatColor.RED + "The game is ended!");
-//>>>>>>> Stashed changes
+
 			}
 		}
 		
@@ -151,21 +146,13 @@ public class Main extends JavaPlugin implements Listener {
 						loc[counter] = player.getLocation();
 						// положить обратно где взяли
 						victims.put(player.getName(), loc);
-//						Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
+						// Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
 					}
 				}
 				if (counter == 14) counter = 0;
 				else counter++;
-//				Bukkit.getServer().broadcastMessage("увеличиваю каунтер");
-				
-				// debug
-//				Location[] loc = victims.get("Shibatsui");
-//				Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
-//				
-				
-				// debug
+
 				gameRunning();
-//				Bukkit.getServer().broadcastMessage("запускаю заново хуйню");
 			}
 		};
 		
@@ -181,14 +168,14 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-//			Bukkit.getServer().broadcastMessage("жопа правой кнопкой по воздуху");
+
 			Player player = event.getPlayer();
 			if (hunters.containsKey(player.getName())) {
-//				Bukkit.getServer().broadcastMessage("жопа хантера");
+
 				if (player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
-//					Bukkit.getServer().broadcastMessage("компас в жопе");
+
 					if (player.getInventory().getItemInMainHand().getItemMeta().hasLore()) {
-//						Bukkit.getServer().broadcastMessage("компас не на жопу");
+
 						
 						if (hunters.get(player.getName()) == victimsInOrder.size() - 1) hunters.put(player.getName(), 0);
 						else hunters.put(player.getName(), hunters.get(player.getName()) + 1);
