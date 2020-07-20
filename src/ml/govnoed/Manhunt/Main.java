@@ -19,11 +19,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
@@ -36,7 +39,7 @@ public class Main extends JavaPlugin implements Listener {
 	List<String> huntersInOrder = new ArrayList<String>();
 	public int headStart = 15;
 	public int compassDelay = 15;
-	
+	public boolean movementRestriction = false;
 	
 	public int counter = 0;
 	public boolean gameActive = false;
@@ -138,9 +141,11 @@ public class Main extends JavaPlugin implements Listener {
 					Bukkit.getServer().broadcastMessage("[Manhunt] Cannot start the game! There are no victims!");
 					return true;
 				}
-
+				PotionEffect blindnessEff = new PotionEffect(PotionEffectType.BLINDNESS,headStart * 20,100);
+				movementRestriction = true;
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (!(victimsInOrder.contains(player.getName()))) {
+						blindnessEff.apply(player);
 						hunters.put(player.getName(), 0);
 						huntersInOrder.add(player.getName());
 						player.sendMessage("Your role - " + ChatColor.RED + "the Hunter" + ChatColor.WHITE + "! Take down these " + ChatColor.ITALIC + "'speedy' " 
@@ -176,13 +181,16 @@ public class Main extends JavaPlugin implements Listener {
 				
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
-				gameActive = false;
-				Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.RED + "The game is over!");
-				victims.clear();
-				hunters.clear();
-				victimsInOrder.clear();
-				huntersInOrder.clear();
-
+				if(gameActive == false) {
+					sender.sendMessage("[Manhunt] " + ChatColor.RED + "The game has not been started yet!");
+				}else {
+					gameActive = false;
+					Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.RED + "The game is over!");
+					victims.clear();
+					hunters.clear();
+					victimsInOrder.clear();
+					huntersInOrder.clear();
+				}
 			}
 		}
 		
@@ -195,7 +203,8 @@ public class Main extends JavaPlugin implements Listener {
 			
 			@Override
 			public void run() {
-				
+				Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.RED + "The game has started!");
+				movementRestriction = false;
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (hunters.containsKey(player.getName())) {
 						player.getInventory().addItem(getCompass());
@@ -238,8 +247,14 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	
-	
-	
+	@EventHandler
+	public void onMove(PlayerMoveEvent event) {
+		if(movementRestriction == true) {
+			if(hunters.containsKey(event.getPlayer().getName())) {
+				event.setCancelled(true);
+			}
+		}
+	}
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
@@ -291,7 +306,9 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
-		
+		if(gameActive == false) {
+			return;
+		}
 		Player player = (Player) event.getEntity();
 		
 		if (victims.containsKey(player.getName())) {
