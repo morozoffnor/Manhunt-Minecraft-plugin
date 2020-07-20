@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -31,6 +32,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, Integer> hunters = new HashMap<String, Integer>();
 	List<String> victimsInOrder = new ArrayList<String>();
 	List<String> huntersInOrder = new ArrayList<String>();
+	
 	
 	public int counter = 0;
 	public boolean gameActive = false;
@@ -74,7 +76,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (args[0].equalsIgnoreCase("start")) {
 				
 				if (gameActive == true) {
-					Bukkit.getServer().broadcastMessage("хуй тебе а не игру сломать пидор сдохни");
+					sender.sendMessage(ChatColor.DARK_RED + "The game has already started!");
 					return true;
 				}
 
@@ -91,7 +93,9 @@ public class Main extends JavaPlugin implements Listener {
 				gameActive = true;
 				gameRunning();
 				runGame();
-				Bukkit.getServer().broadcastMessage("The game will start soon!");
+				Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "The game will start soon!");
+				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Hunters: " + ChatColor.RED + hunters.keySet());
+				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Victims: " + ChatColor.BLUE + victims.keySet());
 				return true;
 				
 				
@@ -119,13 +123,7 @@ public class Main extends JavaPlugin implements Listener {
 						player.getInventory().addItem(getCompass());
 					}
 				}
-				
-				Bukkit.getServer().broadcastMessage("Hunters: " + hunters.keySet());
-				Bukkit.getServer().broadcastMessage("Victims: " + victims.keySet());
-				
-				
-				
-				
+
 			}
 		};
 		
@@ -164,7 +162,6 @@ public class Main extends JavaPlugin implements Listener {
 	
 	
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
@@ -180,7 +177,14 @@ public class Main extends JavaPlugin implements Listener {
 						if (hunters.get(player.getName()) == victimsInOrder.size() - 1) hunters.put(player.getName(), 0);
 						else hunters.put(player.getName(), hunters.get(player.getName()) + 1);
 						
+						// experimental
+						Environment env = Bukkit.getPlayer((String) victims.keySet().toArray()[hunters.get(player.getName())]).getWorld().getEnvironment();
 						
+						if (env == Environment.NETHER) {
+							player.sendMessage(ChatColor.DARK_RED + "Cannot track player " + victims.keySet().toArray()[hunters.get(player.getName())]);
+							return;
+						}
+						// experimental
 						
 						Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
 						
