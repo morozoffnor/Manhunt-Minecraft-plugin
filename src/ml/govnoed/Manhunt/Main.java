@@ -177,14 +177,15 @@ public class Main extends JavaPlugin implements Listener {
 						if (hunters.get(player.getName()) == victimsInOrder.size() - 1) hunters.put(player.getName(), 0);
 						else hunters.put(player.getName(), hunters.get(player.getName()) + 1);
 						
-						// experimental
+						
 						Environment env = Bukkit.getPlayer((String) victims.keySet().toArray()[hunters.get(player.getName())]).getWorld().getEnvironment();
 						
 						if (env == Environment.NETHER) {
 							player.sendMessage(ChatColor.DARK_RED + "Cannot track player " + victims.keySet().toArray()[hunters.get(player.getName())]);
 							return;
 						}
-						// experimental
+						player.sendMessage(ChatColor.GREEN + "Your compass is tracking " + victims.keySet().toArray()[hunters.get(player.getName())]);
+						
 						
 						Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
 						
