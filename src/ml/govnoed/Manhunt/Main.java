@@ -1,24 +1,39 @@
 package ml.govnoed.Manhunt;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class Main extends JavaPlugin implements Listener {
 	
 	public Map<String, Location[]> victims = new HashMap<String, Location[]>();
-	public Map<String, Location[]> hunters = new HashMap<String, Location[]>();
+	public Map<String, Integer> hunters = new HashMap<String, Integer>();
+	List<String> victimsInOrder = new ArrayList<String>();
+	List<String> huntersInOrder = new ArrayList<String>();
+	
+	
 	public int counter = 0;
 	public boolean gameActive = false;
 	
@@ -49,11 +64,9 @@ public class Main extends JavaPlugin implements Listener {
 				for(int i = 0;i<loc.length;i++) {
 					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
 				}
-//				for(Location l : loc) {
-//					Bukkit.getServer().broadcastMessage(Double.toString(l.getX()));
-//				}
-//				Bukkit.getServer().broadcastMessage(loc.toString());
+
 				victims.put(player.getName(), loc);
+				victimsInOrder.add(player.getName());
 				
 				
 			}
@@ -61,14 +74,37 @@ public class Main extends JavaPlugin implements Listener {
 				// leave
 			}
 			if (args[0].equalsIgnoreCase("start")) {
+				
+				if (gameActive == true) {
+					sender.sendMessage(ChatColor.DARK_RED + "The game has already started!");
+					return true;
+				}
+
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (!(victims.containsKey(player.getName()))) {
+						hunters.put(player.getName(), 0);
+						huntersInOrder.add(player.getName());
+						player.sendMessage("You are the hunter!");
+					} else {
+						player.sendMessage("You are the victim!");
+					}
+				}
+				
 				gameActive = true;
+				gameRunning();
 				runGame();
-				Bukkit.getServer().broadcastMessage("The game will start soon!");
+				Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "The game will start soon!");
+				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Hunters: " + ChatColor.RED + hunters.keySet());
+				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Victims: " + ChatColor.BLUE + victims.keySet());
+				return true;
+				
+				
 				
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
 				gameActive = false;
-				Bukkit.getServer().broadcastMessage("The game is ended!");
+				Bukkit.getServer().broadcastMessage(ChatColor.RED + "The game is ended!");
+
 			}
 		}
 		
@@ -82,8 +118,12 @@ public class Main extends JavaPlugin implements Listener {
 			@Override
 			public void run() {
 				
-				gameRunning();
-				
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (hunters.containsKey(player.getName())) {
+						player.getInventory().addItem(getCompass());
+					}
+				}
+
 			}
 		};
 		
@@ -96,24 +136,21 @@ public class Main extends JavaPlugin implements Listener {
 			
 			@Override
 			public void run() {
-				if(gameActive == true) {
-					for (Player player : Bukkit.getOnlinePlayers()) {
-						if (victims.containsKey(player.getName())) {
-							// забрать массив из мапы
-							Location[] loc = victims.get(player.getName());
-							// поменять значение в массиве по индексу
-							loc[counter] = player.getLocation();
-							// положить обратно где взяли
-							victims.put(player.getName(), loc);
-						}
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (victims.containsKey(player.getName())) {
+						// забрать массив из мапы
+						Location[] loc = victims.get(player.getName());
+						// поменять значение в массиве по индексу
+						loc[counter] = player.getLocation();
+						// положить обратно где взяли
+						victims.put(player.getName(), loc);
+						// Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
 					}
-//					Location[] loc = victims.get("Shibatsui");
-//					Bukkit.getServer().broadcastMessage(Double.toString(loc[counter].getX()));
-					if (counter == 14) counter = 0;
-					else counter++;
-					
-					gameRunning();
 				}
+				if (counter == 14) counter = 0;
+				else counter++;
+
+				gameRunning();
 			}
 		};
 		
@@ -127,12 +164,62 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
-		// event.getAction() == Action.RIGHT_CLICK_AIR
+		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+
+			Player player = event.getPlayer();
+			if (hunters.containsKey(player.getName())) {
+
+				if (player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
+
+					if (player.getInventory().getItemInMainHand().getItemMeta().hasLore()) {
+
+						
+						if (hunters.get(player.getName()) == victimsInOrder.size() - 1) hunters.put(player.getName(), 0);
+						else hunters.put(player.getName(), hunters.get(player.getName()) + 1);
+						
+						
+						Environment env = Bukkit.getPlayer((String) victims.keySet().toArray()[hunters.get(player.getName())]).getWorld().getEnvironment();
+						
+						if (env == Environment.NETHER) {
+							player.sendMessage(ChatColor.DARK_RED + "Cannot track player " + victims.keySet().toArray()[hunters.get(player.getName())]);
+							return;
+						}
+						player.sendMessage(ChatColor.GREEN + "Your compass is tracking " + victims.keySet().toArray()[hunters.get(player.getName())]);
+						
+						
+						Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
+						
+						player.setCompassTarget(loc[counter]);
+					}
+				}
+			}
+		}
 	}
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		// check deaths
+	}
+	
+	public ItemStack getCompass() {
+		ItemStack compass = new ItemStack(Material.COMPASS);
+		
+		ItemMeta meta = compass.getItemMeta();
+		
+		meta.setDisplayName("Hunter's compass");
+		List<String> lore = new ArrayList<String>();
+		lore.add("");
+		lore.add(ChatColor.translateAlternateColorCodes('&', "&7(R) &5Find victim"));
+		meta.setLore(lore);
+		
+		meta.addEnchant(Enchantment.MULTISHOT, 1, true);
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		meta.setUnbreakable(true);
+		
+		compass.setItemMeta(meta);
+		
+		return compass;
 	}
 
 }
