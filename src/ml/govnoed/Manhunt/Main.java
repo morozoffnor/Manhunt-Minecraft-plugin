@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
@@ -18,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,6 +45,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 	
 		this.getServer().getPluginManager().registerEvents(this, this);
+		this.getCommand("manhunt").setTabCompleter(new Tab());
 		
 	}
 
@@ -61,8 +64,17 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			if (args[0].equalsIgnoreCase("victim")) {
 
-				victimsInOrder.add(sender.getName());
+
 				
+				
+
+				if(!(victimsInOrder.contains(sender.getName()))){
+				  victimsInOrder.add(sender.getName());
+				  sender.sendMessage('You are now in the victim team!')
+				} else{
+ 					sender.sendMessage("You are already joined to the victim team!")
+				}
+
 				
 			}
 			if (args[0].equalsIgnoreCase("settings")){
@@ -102,7 +114,13 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 			if (args[0].equalsIgnoreCase("leave")) {
-				// leave
+				if((Arrays.asList(player.getName()).contains(player.getName()))){
+				victim.remove(player.getName(),loc)
+				victimInOrder.remove(player.getName())
+				sender.sendMessage("You aren't in the victim team anymore!")
+				} else{
+					sender.sendMessage("U stupid~! You weren't in the victim team!")
+				}
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				
@@ -115,15 +133,17 @@ public class Main extends JavaPlugin implements Listener {
 					if (!(victimsInOrder.contains(player.getName()))) {
 						hunters.put(player.getName(), 0);
 						huntersInOrder.add(player.getName());
-						player.sendMessage("You are the hunter!");
+						player.sendMessage("Your role - the hunter! Take down these 'speedy' bustards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
 					} else {
+
 						Location[] loc = new Location[compassDelay];
 						for(int i = 0;i<loc.length;i++) {
 							loc[i] = new Location(Bukkit.getWorld("world"),1.0,1.0,1.0);
 						}
 
 						victims.put(player.getName(), loc);
-						player.sendMessage("You are the victim!");
+						player.sendMessage("Your role - the victim! You must defeat the Enderdragon as faster, as you can! But beware hunters, they are always in your footsteps... Good luck, you'll really need it ;)");
+
 					}
 				}
 				
@@ -234,8 +254,28 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event) {
+		
+		Player player = event.getPlayer();
+		
+		if (hunters.containsKey(player.getName())) {
+			player.getInventory().addItem(getCompass());
+		}
+	}
+	
+	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
-		// check deaths
+		
+		Player player = (Player) event.getEntity();
+		
+		if (victims.containsKey(player.getName())) {
+			victims.remove(player.getName());
+			
+			victimsInOrder.remove(victimsInOrder.indexOf(player.getName()));
+			player.setGameMode(GameMode.SPECTATOR);
+			
+			Bukkit.getServer().broadcastMessage(ChatColor.BLUE + player.getName() + " " + ChatColor.DARK_RED + "is dead! They are sprectating now!");
+		}
 	}
 	
 	public ItemStack getCompass() {
