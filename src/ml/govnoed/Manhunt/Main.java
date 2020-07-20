@@ -86,14 +86,14 @@ public class Main extends JavaPlugin implements Listener {
 					break;
 				case 2:
 					//Ошибка ввода, добавить значение
-					sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error.Add value after " + args[1]);
+					sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Add value after " + args[1]);
 					break;
 				case 3:
 					//Проверяем аргумент настроек
-					if (args[1].equalsIgnoreCase("HeadStart")) {
+					if (args[1].equalsIgnoreCase("headStart")) {
 						try {
 							headStart = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Head Start is set by "+ sender.getName() +" to " + args[2]);
+							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "HeadStart is set by "+ sender.getName() +" to " + args[2]);
 						}
 						catch (NumberFormatException e)
 						{
@@ -104,7 +104,7 @@ public class Main extends JavaPlugin implements Listener {
 						try {
 							if(Integer.parseInt(args[2]) >= 0) {
 								compassDelay = Integer.parseInt(args[2]);
-								Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Compass Delay is set by "+ sender.getName() +" to " + args[2]);
+								Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "CompassDelay is set by "+ sender.getName() +" to " + args[2]);
 							}
 							else {
 								sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Send an positive integer value or zero.");
