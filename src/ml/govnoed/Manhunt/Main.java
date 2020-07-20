@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
@@ -18,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +43,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 	
 		this.getServer().getPluginManager().registerEvents(this, this);
+		this.getCommand("manhunt").setTabCompleter(new Tab());
 		
 	}
 
@@ -197,8 +200,28 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event) {
+		
+		Player player = event.getPlayer();
+		
+		if (hunters.containsKey(player.getName())) {
+			player.getInventory().addItem(getCompass());
+		}
+	}
+	
+	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
-		// check deaths
+		
+		Player player = (Player) event.getEntity();
+		
+		if (victims.containsKey(player.getName())) {
+			victims.remove(player.getName());
+			
+			victimsInOrder.remove(victimsInOrder.indexOf(player.getName()));
+			player.setGameMode(GameMode.SPECTATOR);
+			
+			Bukkit.getServer().broadcastMessage(ChatColor.BLUE + player.getName() + " " + ChatColor.DARK_RED + "is dead! They are sprectating now!");
+		}
 	}
 	
 	public ItemStack getCompass() {
