@@ -58,13 +58,13 @@ public class Main extends JavaPlugin implements Listener {
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("victim")) {
-				
+				if(!(Arrays.asList(player.getName()).contains(player.getName())))
 				Player player = (Player) sender;
 				Location[] loc = new Location[15];
 				for(int i = 0;i<loc.length;i++) {
 					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
 				}
-
+				
 				victims.put(player.getName(), loc);
 				victimsInOrder.add(player.getName());
 				
