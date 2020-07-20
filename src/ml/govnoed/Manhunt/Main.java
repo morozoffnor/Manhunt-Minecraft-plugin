@@ -34,7 +34,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, Integer> hunters = new HashMap<String, Integer>();
 	List<String> victimsInOrder = new ArrayList<String>();
 	List<String> huntersInOrder = new ArrayList<String>();
-	public int gameStartTimer = 15;
+	public int headStart = 15;
 	public int compassDelay = 15;
 	
 	
@@ -81,8 +81,8 @@ public class Main extends JavaPlugin implements Listener {
 				switch(args.length) {
 				case 1:
 					//Выводим текущие настройки
-					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "GameStartTimer is " + Double.toString(gameStartTimer));
-					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "CompassDelay is " + Double.toString(compassDelay));
+					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "Head Start is " + Double.toString(headStart));
+					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "Compass Delay is " + Double.toString(compassDelay));
 					break;
 				case 2:
 					//Ошибка ввода, добавить значение
@@ -90,10 +90,10 @@ public class Main extends JavaPlugin implements Listener {
 					break;
 				case 3:
 					//Проверяем аргумент настроек
-					if (args[1].equalsIgnoreCase("GameStartTimer")) {
+					if (args[1].equalsIgnoreCase("HeadStart")) {
 						try {
-							gameStartTimer = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Game Start Timer set by "+ sender.getName() +" to " + args[2]);
+							headStart = Integer.parseInt(args[2]);
+							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Head Start is set by "+ sender.getName() +" to " + args[2]);
 						}
 						catch (NumberFormatException e)
 						{
@@ -102,12 +102,17 @@ public class Main extends JavaPlugin implements Listener {
 					}
 					if (args[1].equalsIgnoreCase("compassDelay")) {
 						try {
-							compassDelay = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Compass Delay set by "+ sender.getName() +" to " + args[2]);
+							if(Integer.parseInt(args[2]) >= 0) {
+								compassDelay = Integer.parseInt(args[2]);
+								Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Compass Delay is set by "+ sender.getName() +" to " + args[2]);
+							}
+							else {
+								sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Send an positive integer value or zero.");
+							}
 						}
 						catch (NumberFormatException e)
 						{
-							sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Write an integer value.");
+							sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Send an integer value.");
 						}
 					}
 					break;
@@ -142,7 +147,7 @@ public class Main extends JavaPlugin implements Listener {
 						+ ChatColor.WHITE + "bastards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
 					} else {
 
-						Location[] loc = new Location[compassDelay];
+						Location[] loc = new Location[compassDelay]; 
 						for(int i = 0;i<loc.length;i++) {
 							loc[i] = new Location(Bukkit.getWorld("world"),1.0,1.0,1.0);
 						}
@@ -156,7 +161,9 @@ public class Main extends JavaPlugin implements Listener {
 				}
 				
 				gameActive = true;
-				gameRunning();
+				if(compassDelay != 0) {
+					gameRunning();
+				}
 				runGame();
 				Bukkit.getServer().broadcastMessage("");
 				Bukkit.getServer().broadcastMessage("");
@@ -199,7 +206,7 @@ public class Main extends JavaPlugin implements Listener {
 		};
 		
 		
-		game.runTaskLater(this, 20L * gameStartTimer);
+		game.runTaskLater(this, 20L * headStart);
 	}
 	
 	public void gameRunning() {
@@ -258,10 +265,14 @@ public class Main extends JavaPlugin implements Listener {
 						}
 						player.sendMessage(ChatColor.GREEN + "Your compass is tracking " + victims.keySet().toArray()[hunters.get(player.getName())]);
 						
-						
-						Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
-						
-						player.setCompassTarget(loc[counter]);
+						if(compassDelay == 0) {
+							Location loc = Bukkit.getPlayer(victims.keySet().toArray()[hunters.get(player.getName())].toString()).getLocation();
+							player.setCompassTarget(loc);
+						}
+						else {
+							Location[] loc = victims.get(victims.keySet().toArray()[hunters.get(player.getName())]);
+							player.setCompassTarget(loc[counter]);
+						}
 					}
 				}
 			}
@@ -289,7 +300,11 @@ public class Main extends JavaPlugin implements Listener {
 			victimsInOrder.remove(victimsInOrder.indexOf(player.getName()));
 			player.setGameMode(GameMode.SPECTATOR);
 			
-			Bukkit.getServer().broadcastMessage(ChatColor.BLUE + player.getName() + " " + ChatColor.DARK_RED + "is dead! They are sprectating now!");
+			Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.BLUE + player.getName() + " " + ChatColor.DARK_RED + "is dead! They are sprectating now!");
+		}
+		if(victims.size() == 0) {
+			gameActive = false;
+			Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "All victims are dead! The game is over!");
 		}
 	}
 	
