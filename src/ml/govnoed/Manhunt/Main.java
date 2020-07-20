@@ -13,10 +13,12 @@ import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -321,7 +323,19 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		if(victims.size() == 0) {
 			gameActive = false;
+			victims.clear();
+			hunters.clear();
+			victimsInOrder.clear();
+			huntersInOrder.clear();
 			Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "All victims are dead! The game is over!");
+		}
+	}
+	
+	@EventHandler
+	public void onSlayingEnderDragon(EntityDeathEvent event) {
+		if(event.getEntity() instanceof EnderDragon) {
+			gameActive = false;
+			Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Ender Dragon has been slayed! The game is over!");
 		}
 	}
 	
