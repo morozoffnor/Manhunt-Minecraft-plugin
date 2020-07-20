@@ -58,7 +58,7 @@ public class Main extends JavaPlugin implements Listener {
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("victim")) {
-				if(!(Arrays.asList(player.getName()).contains(player.getName())))
+				if(!(Arrays.asList(player.getName()).contains(player.getName()))){
 				Player player = (Player) sender;
 				Location[] loc = new Location[15];
 				for(int i = 0;i<loc.length;i++) {
@@ -67,11 +67,20 @@ public class Main extends JavaPlugin implements Listener {
 				
 				victims.put(player.getName(), loc);
 				victimsInOrder.add(player.getName());
-				
+				sender.sendMessage('You are now in the victim team!')
+				} else{
+ 					sender.sendMessage("You are already joined to the victim team!")
+				}
 				
 			}
 			if (args[0].equalsIgnoreCase("leave")) {
-				// leave
+				if((Arrays.asList(player.getName()).contains(player.getName()))){
+				victim.remove(player.getName(),loc)
+				victimInOrder.remove(player.getName())
+				sender.sendMessage("You aren't in the victim team anymore!")
+				} else{
+					sender.sendMessage("U stupid~! You weren't in the victim team!")
+				}
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				
@@ -84,9 +93,9 @@ public class Main extends JavaPlugin implements Listener {
 					if (!(victims.containsKey(player.getName()))) {
 						hunters.put(player.getName(), 0);
 						huntersInOrder.add(player.getName());
-						player.sendMessage("You are the hunter!");
+						player.sendMessage("Your role - the hunter! Take down these 'speedy' bustards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
 					} else {
-						player.sendMessage("You are the victim!");
+						player.sendMessage("Your role - the victim! You must defeat the Enderdragon as faster, as you can! But beware hunters, they are always in your footsteps... Good luck, you'll really need it ;)");
 					}
 				}
 				
