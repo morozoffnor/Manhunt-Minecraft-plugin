@@ -34,6 +34,8 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, Integer> hunters = new HashMap<String, Integer>();
 	List<String> victimsInOrder = new ArrayList<String>();
 	List<String> huntersInOrder = new ArrayList<String>();
+	public int gameStartTimer = 15;
+	public int compassDelay = 15;
 	
 	
 	public int counter = 0;
@@ -61,20 +63,55 @@ public class Main extends JavaPlugin implements Listener {
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("victim")) {
-				if(!(Arrays.asList(player.getName()).contains(player.getName()))){
-				Player player = (Player) sender;
-				Location[] loc = new Location[15];
-				for(int i = 0;i<loc.length;i++) {
-					loc[i] = new Location(Bukkit.getWorld("world"),i,1.0,1.0);
-				}
+
+
 				
-				victims.put(player.getName(), loc);
-				victimsInOrder.add(player.getName());
-				sender.sendMessage('You are now in the victim team!')
+				
+
+				if(!(victimsInOrder.contains(sender.getName()))){
+				  victimsInOrder.add(sender.getName());
+				  sender.sendMessage('You are now in the victim team!')
 				} else{
  					sender.sendMessage("You are already joined to the victim team!")
 				}
+
 				
+			}
+			if (args[0].equalsIgnoreCase("settings")){
+				switch(args.length) {
+				case 1:
+					//Выводим текущие настройки
+					sender.sendMessage(ChatColor.GOLD + "GameStartTimer is " + Double.toString(gameStartTimer));
+					sender.sendMessage(ChatColor.GOLD + "CompassDelay is " + Double.toString(compassDelay));
+					break;
+				case 2:
+					//Ошибка ввода, добавить значение
+					sender.sendMessage(ChatColor.DARK_RED + "Error.Add value after " + args[1]);
+					break;
+				case 3:
+					//Проверяем аргумент настроек
+					if (args[1].equalsIgnoreCase("GameStartTimer")) {
+						try {
+							gameStartTimer = Integer.parseInt(args[2]);
+							Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Game Start Timer set by "+ sender.getName() +" to " + args[2]);
+						}
+						catch (NumberFormatException e)
+						{
+							sender.sendMessage(ChatColor.DARK_RED + "Error.Write an integer value.");
+						}
+					}
+					if (args[1].equalsIgnoreCase("compassDelay")) {
+						try {
+							compassDelay = Integer.parseInt(args[2]);
+							Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Compass Delay set by "+ sender.getName() +" to " + args[2]);
+						}
+						catch (NumberFormatException e)
+						{
+							sender.sendMessage(ChatColor.DARK_RED + "Error.Write an integer value.");
+						}
+					}
+					break;
+				}
 			}
 			if (args[0].equalsIgnoreCase("leave")) {
 				if((Arrays.asList(player.getName()).contains(player.getName()))){
@@ -93,12 +130,20 @@ public class Main extends JavaPlugin implements Listener {
 				}
 
 				for (Player player : Bukkit.getOnlinePlayers()) {
-					if (!(victims.containsKey(player.getName()))) {
+					if (!(victimsInOrder.contains(player.getName()))) {
 						hunters.put(player.getName(), 0);
 						huntersInOrder.add(player.getName());
 						player.sendMessage("Your role - the hunter! Take down these 'speedy' bustards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
 					} else {
+
+						Location[] loc = new Location[compassDelay];
+						for(int i = 0;i<loc.length;i++) {
+							loc[i] = new Location(Bukkit.getWorld("world"),1.0,1.0,1.0);
+						}
+
+						victims.put(player.getName(), loc);
 						player.sendMessage("Your role - the victim! You must defeat the Enderdragon as faster, as you can! But beware hunters, they are always in your footsteps... Good luck, you'll really need it ;)");
+
 					}
 				}
 				
@@ -140,7 +185,7 @@ public class Main extends JavaPlugin implements Listener {
 		};
 		
 		
-		game.runTaskLater(this, 20L * 15);
+		game.runTaskLater(this, 20L * gameStartTimer);
 	}
 	
 	public void gameRunning() {
@@ -159,7 +204,7 @@ public class Main extends JavaPlugin implements Listener {
 						// Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
 					}
 				}
-				if (counter == 14) counter = 0;
+				if (counter == compassDelay-1) counter = 0;
 				else counter++;
 
 				gameRunning();
