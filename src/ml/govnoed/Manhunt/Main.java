@@ -59,7 +59,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		if (label.equalsIgnoreCase("manhunt")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage("Sorry! This command is players only!");
+				sender.sendMessage("[Manhunt] " + "Sorry! This command is players only!");
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("victim")) {
@@ -70,9 +70,9 @@ public class Main extends JavaPlugin implements Listener {
 
 				if(!(victimsInOrder.contains(sender.getName()))){
 				  victimsInOrder.add(sender.getName());
-				  sender.sendMessage('You are now in the victim team!')
+				  sender.sendMessage("[Manhunt] " + "You are now in the victim team!");
 				} else{
- 					sender.sendMessage("You are already joined to the victim team!")
+ 					sender.sendMessage("[Manhunt] " + "You are already joined to the victim team!");
 				}
 
 				
@@ -81,51 +81,56 @@ public class Main extends JavaPlugin implements Listener {
 				switch(args.length) {
 				case 1:
 					//Выводим текущие настройки
-					sender.sendMessage(ChatColor.GOLD + "GameStartTimer is " + Double.toString(gameStartTimer));
-					sender.sendMessage(ChatColor.GOLD + "CompassDelay is " + Double.toString(compassDelay));
+					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "GameStartTimer is " + Double.toString(gameStartTimer));
+					sender.sendMessage("[Manhunt] " + ChatColor.GOLD + "CompassDelay is " + Double.toString(compassDelay));
 					break;
 				case 2:
 					//Ошибка ввода, добавить значение
-					sender.sendMessage(ChatColor.DARK_RED + "Error.Add value after " + args[1]);
+					sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error.Add value after " + args[1]);
 					break;
 				case 3:
 					//Проверяем аргумент настроек
 					if (args[1].equalsIgnoreCase("GameStartTimer")) {
 						try {
 							gameStartTimer = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Game Start Timer set by "+ sender.getName() +" to " + args[2]);
+							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Game Start Timer set by "+ sender.getName() +" to " + args[2]);
 						}
 						catch (NumberFormatException e)
 						{
-							sender.sendMessage(ChatColor.DARK_RED + "Error.Write an integer value.");
+							sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Write an integer value.");
 						}
 					}
 					if (args[1].equalsIgnoreCase("compassDelay")) {
 						try {
 							compassDelay = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Compass Delay set by "+ sender.getName() +" to " + args[2]);
+							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "Compass Delay set by "+ sender.getName() +" to " + args[2]);
 						}
 						catch (NumberFormatException e)
 						{
-							sender.sendMessage(ChatColor.DARK_RED + "Error.Write an integer value.");
+							sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Write an integer value.");
 						}
 					}
 					break;
 				}
 			}
 			if (args[0].equalsIgnoreCase("leave")) {
-				if((Arrays.asList(player.getName()).contains(player.getName()))){
-				victim.remove(player.getName(),loc)
-				victimInOrder.remove(player.getName())
-				sender.sendMessage("You aren't in the victim team anymore!")
+				if((victimsInOrder.contains(sender.getName()))){
+				
+				victimsInOrder.remove(sender.getName());
+				sender.sendMessage("[Manhunt] You aren't in the victim team anymore!");
 				} else{
-					sender.sendMessage("U stupid~! You weren't in the victim team!")
+					sender.sendMessage("[Manhunt] U stupid~! You weren't in the victim team!");
 				}
 			}
 			if (args[0].equalsIgnoreCase("start")) {
 				
 				if (gameActive == true) {
-					sender.sendMessage(ChatColor.DARK_RED + "The game has already started!");
+					sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "The game has already started!");
+					return true;
+				}
+				
+				if (victimsInOrder.size() == 0) {
+					Bukkit.getServer().broadcastMessage("[Manhunt] Cannot start the game! There are no victims!");
 					return true;
 				}
 
@@ -133,7 +138,8 @@ public class Main extends JavaPlugin implements Listener {
 					if (!(victimsInOrder.contains(player.getName()))) {
 						hunters.put(player.getName(), 0);
 						huntersInOrder.add(player.getName());
-						player.sendMessage("Your role - the hunter! Take down these 'speedy' bustards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
+						player.sendMessage("Your role - " + ChatColor.RED + "the Hunter" + ChatColor.WHITE + "! Take down these " + ChatColor.ITALIC + "'speedy' " 
+						+ ChatColor.WHITE + "bastards, before they slay the Enderdragon! Сompass will show you the direction where the last victim you chose was! gl & hf :)");
 					} else {
 
 						Location[] loc = new Location[compassDelay];
@@ -142,7 +148,9 @@ public class Main extends JavaPlugin implements Listener {
 						}
 
 						victims.put(player.getName(), loc);
-						player.sendMessage("Your role - the victim! You must defeat the Enderdragon as faster, as you can! But beware hunters, they are always in your footsteps... Good luck, you'll really need it ;)");
+						player.sendMessage("Your role - " + ChatColor.BLUE + "the Victim" + ChatColor.WHITE 
+								+ "! You must defeat the Enderdragon as fast, as you can! But beware hunters, " + ChatColor.ITALIC + "they are always follow closely..." + ChatColor.WHITE 
+								+ " Good luck, you'll really need it ;)");
 
 					}
 				}
@@ -150,7 +158,9 @@ public class Main extends JavaPlugin implements Listener {
 				gameActive = true;
 				gameRunning();
 				runGame();
-				Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "The game will start soon!");
+				Bukkit.getServer().broadcastMessage("");
+				Bukkit.getServer().broadcastMessage("");
+				Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "The game will start soon!");
 				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Hunters: " + ChatColor.RED + hunters.keySet());
 				Bukkit.getServer().broadcastMessage(ChatColor.WHITE + "Victims: " + ChatColor.BLUE + victims.keySet());
 				return true;
@@ -160,7 +170,11 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			if (args[0].equalsIgnoreCase("stop")) {
 				gameActive = false;
-				Bukkit.getServer().broadcastMessage(ChatColor.RED + "The game is ended!");
+				Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.RED + "The game is over!");
+				victims.clear();
+				hunters.clear();
+				victimsInOrder.clear();
+				huntersInOrder.clear();
 
 			}
 		}
@@ -204,6 +218,7 @@ public class Main extends JavaPlugin implements Listener {
 						// Bukkit.getServer().broadcastMessage("добавляю локацию в массив");
 					}
 				}
+				
 				if (counter == compassDelay-1) counter = 0;
 				else counter++;
 
