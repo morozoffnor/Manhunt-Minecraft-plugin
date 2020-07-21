@@ -98,7 +98,7 @@ public class Main extends JavaPlugin implements Listener {
 					if (args[1].equalsIgnoreCase("headStart")) {
 						try {
 							headStart = Integer.parseInt(args[2]);
-							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "HeadStart is set by "+ sender.getName() +" to " + args[2]);
+							Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "HeadStart is set by "+ sender.getName() +" to " + args[2] + " seconds");
 						}
 						catch (NumberFormatException e)
 						{
@@ -109,7 +109,7 @@ public class Main extends JavaPlugin implements Listener {
 						try {
 							if(Integer.parseInt(args[2]) >= 0) {
 								compassDelay = Integer.parseInt(args[2]);
-								Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "CompassDelay is set by "+ sender.getName() +" to " + args[2]);
+								Bukkit.getServer().broadcastMessage("[Manhunt] " + ChatColor.GOLD + "CompassDelay is set by "+ sender.getName() +" to " + args[2] + " seconds");
 							}
 							else {
 								sender.sendMessage("[Manhunt] " + ChatColor.DARK_RED + "Error. Send an positive integer value or zero.");
