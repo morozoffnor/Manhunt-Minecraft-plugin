@@ -260,6 +260,10 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
+		if(gameActive == false) {
+			return;
+		}
+		
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 
 			Player player = event.getPlayer();
@@ -298,11 +302,15 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
-		
-		Player player = event.getPlayer();
-		
-		if (hunters.containsKey(player.getName())) {
-			player.getInventory().addItem(getCompass());
+		if(gameActive == true) {
+			Player player = event.getPlayer();
+			
+			if (hunters.containsKey(player.getName())) {
+				player.getInventory().addItem(getCompass());
+			}
+		}
+		else {
+			return;
 		}
 	}
 	
