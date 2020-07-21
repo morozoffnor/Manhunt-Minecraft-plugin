@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -144,8 +145,14 @@ public class Main extends JavaPlugin implements Listener {
 					return true;
 				}
 				PotionEffect blindnessEff = new PotionEffect(PotionEffectType.BLINDNESS,headStart * 20,100);
+				PotionEffect saturationEff = new PotionEffect(PotionEffectType.SATURATION,20,2);
 				movementRestriction = true;
 				for (Player player : Bukkit.getOnlinePlayers()) {
+					saturationEff.apply(player);
+					player.getInventory().clear();
+					for(World world : Bukkit.getServer().getWorlds()) {
+						world.setTime(0);
+					}
 					if (!(victimsInOrder.contains(player.getName()))) {
 						blindnessEff.apply(player);
 						hunters.put(player.getName(), 0);
@@ -260,6 +267,10 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent event) {
+		if(gameActive == false) {
+			return;
+		}
+		
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 
 			Player player = event.getPlayer();
@@ -298,11 +309,15 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
-		
-		Player player = event.getPlayer();
-		
-		if (hunters.containsKey(player.getName())) {
-			player.getInventory().addItem(getCompass());
+		if(gameActive == true) {
+			Player player = event.getPlayer();
+			
+			if (hunters.containsKey(player.getName())) {
+				player.getInventory().addItem(getCompass());
+			}
+		}
+		else {
+			return;
 		}
 	}
 	
