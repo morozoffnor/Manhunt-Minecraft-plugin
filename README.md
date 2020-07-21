@@ -18,4 +18,4 @@ Put the `Manhunt.jar` into your `plugins` folder.
 Type `/manhunt victim` in chat to become the victim.
 Then `/manhunt start`. The rest of the players will become hunters.
 
-You can specify some things like `compassDelay` and `headStart`  via `/manhunt settings` before the game start.
+You can specify some things like `compassDelay` and `headStart`  via `/manhunt settings` before the game start. These values must be in seconds.
